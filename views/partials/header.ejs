@@ -1,10 +1,12 @@
+<header>
 <h1>The Student Information Management System</h1>
 <% if (user) { %>
-   <p>Hello, <%= user.name %> you are logged in.</p>
+   <p>Hello, <%= user.name %> welcome!.</p>
    <form method="POST" action="/sessions/logoff">
     <input type="hidden" name="_csrf" value="<%=_csrf %>">
     <button>Logoff</button>
    </form>
+</header>
 <% } %>
 <% if (errors) {
     errors.forEach((err) => { %>

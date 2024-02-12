@@ -34,6 +34,7 @@ if (app.get("env") === "production") {
   sessionParms.cookie.secure = true;
 }
 
+app.use(express.static('views'));
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(session(sessionParms));
