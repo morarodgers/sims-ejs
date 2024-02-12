@@ -1,0 +1,42 @@
+<%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+<header>
+  <h1>Student Information Management System</h1>
+  <h2>Student List</h2>
+</header>
+<table id="students-table">
+  <tr id="students-table-header">
+    <th>First name</th>
+    <th>Second name</th>
+    <th>Surname</th>
+    <th>Date of birth</th>
+    <th>Admission number</th>
+    <th>Class Name</th>
+    <th colspan="2"></th>
+  </tr>
+  <% if (students && students.length) { %>
+    <% students.forEach((student) => { %>
+      <tr>
+        <td><%= student.firstName %></td>
+        <td><%= student.secondName %></td>
+        <td><%= student.surname %></td>
+        <td><%= student.dateOfBirth %></td>
+        <td><%= student.admNumber %></td>
+        <td><%= student.className %></td>
+        <td><a href="/students/edit/<%= student.id %>">
+            <button type="button" action="/student/update/<%= student.id %>">Edit</button>
+          </a></td>
+        <td><form method="POST" action="/students/delete/<%= student.id %>" style="display: inline">
+          <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+          <button type="submit">Delete</button>
+        </form></td>
+      </tr>
+    <% }) %>
+  <% } %>
+</table>
+<br />
+<a href="/students">
+    <button type="button">Add New Student</button>
+</a>
+<br />
+<br />
+<a href="/">Click here to return home.</a>
