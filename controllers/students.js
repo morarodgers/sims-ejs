@@ -1,80 +1,155 @@
-const Student = require('../models/student')
+const Student = require('../models/student');
+const parseVErr = require("../utils/parseValidationErrs");
+
+const gender_values = Student.schema.path("gender").enumValues;
+
 
 const getAllStudents = async (req, res) => {
-  const students = await Student.find({ createdBy: req.user.userId }).sort('createdAt')
-  res.render('students', { students });
-}
-const getStudent = async (req, res) => {
-  const {
-    user: { userId },
-    params: { id: studentId },
-  } = req
-
-  const student = await Student.findOne({
-    _id: studentId,
-    createdBy: userId,
-  })
-  if (!student) {
-    req.flash("error",`No student with id ${studentId} found`);
-  }
-  res.redirect('/students');
+  const students = await Student.find({ createdBy: req.user.userId });
+  res.render("pages/students",{
+    students: students,
+    errors: req.flash("error"),
+    info: req.flash("info"),
+  });
 };
 
-const createStudent = async (req, res) => {
+const createStudent = (req, res) => {
+  const student_values = {
+    firstName:"",
+    secondName:"",
+    surname:"",
+    dateOfBirth:"",
+    admNumber:"",
+    className:"",
+    gender:"",
+    action:"/students/add",
+    submit: "Add",
+    title: "Add a student",
+  };
+  res.render("pages/student", {
+    gender_values,
+    student_values,
+    errors: req.flash("error"),
+    info: req.flash("info"),
+  });
+};
+
+const addStudent = async(req, res, next) => {
   try {
-    const {firstName, secondName, surname, dateOfBirth, admNumber, className } = req.body;
-
-    if (!firstName || !secondName || !surname || !dateOfBirth || !admNumber || !className) {
-      req.flash("error", "first name, second name, surname, date of birth, admission number and class name fields cannot be empty.");
-      return res.redirect('/students/new');
-    } 
-
-    req.body.createdBy = req.user.id;
-    await Student.create(req.body);
-    req.flash("info", "The student has been successfully added.")
-  } catch (err) {
-    req.flash("error", "Undefined error.")
+    await Student.create({
+      firstName: req.body.firstName,
+      secondName: req.body.secondName,
+      surname: req.body.surname,
+      dateOfBirth: req.body.dateOfBirth,
+      admNumber: req.body.admNumber,
+      className: req.body.className,
+      gender: req.body.gender,
+      createdBy: req.user.id,
+    });
+  } catch (e) {
+    if (e.name === "ValidationError") {
+      parseVErr(e, req);
+      const student_values = {
+        firstName: req.body.firstName,
+        secondName: req.body.secondName,
+        surname: req.body.surname,
+        dateOfBirth: req.body.dateOfBirth,
+        admNumber: req.body.admNumber,
+        className: req.body.className,
+        gender: req.body.gender,
+        action:"/students/add",
+        submit: "Add",
+        title: "Add a student",
+      };
+      return res.render("pages/student", {
+        gender_values,
+        student_values,
+        errors: req.flash("error"),
+        info: req.flash("info"),
+      });
+    } else {
+      return next(e);
+    }
   }
-  res.redirect('/students');
+  req.flash("info", "The student has been successfully added.")
+  res.redirect("/students")
 };
 
-const updateStudent = async (req, res) => {
-  const {
-    body: { firstName, secondName, surname, dateOfBirth, admNumber, className },
-    user: { userId },
-    params: { id: studentId },
-  } = req
-
-  if (!firstName || !secondName || !surname || !dateOfBirth || !admNumber || !className) {
-    req.flash('error', "You must include the first name, second name, surname, date of birth, admission number and class name");
-    return res.redirect(`/students/edit/${studentId}`);
-  }
-
-  const student = await Student.findByIdAndUpdate(
-    { _id: studentId, createdBy: userId },
-    req.body,
-    { new: true, runValidators: true }
-  )
+const editStudent = async (req, res) => {
+  const student = await Student.findOne({
+    _id: req.params.student,
+    createdBy: req.user.id,
+  });
   if (!student) {
-    req.flash("error",`No student with id ${studentId} found`);
+    req.flash("error", "That student was not found.");
+    return res.redirect("/students");
+  }
+  const student_values = {};
+  student_values.firstName = student.firstName || "";
+  student_values.secondName = student.secondName || "";
+  student_values.surname = student.surname || "";
+  student_values.dateOfBirth = student.dateOfBirth || "";
+  student_values.admNumber = student.admNumber || "";
+  student_values.className = student.className || "";
+  student_values.gender = student.gender || "";
+  student_values.action = `/students/update/${student._id}`;
+  student_values.submit = "Update";
+  student_values.title = "Edit a Studnet Entry";
+  res.render("pages/student", {
+    gender_values,
+    student_values,
+    errors: req.flash("error"),
+    info: req.flash("info"),
+  });
+};
+
+const updateStudent = async (req, res, next) => {
+  let student = null;
+  try {
+    student = await Student.findOneAndUpdate(
+      { _id: req.params.student, createdBy: req.user.id },
+      req.body,
+      { runValidators: true }
+    );
+  } catch (e) {
+    if (e.name === "ValidationError") {
+      parseVErr(e, req);
+      const student_values = {};
+      student_values.firstName = req.body.firstName;
+      student_values.secondName = req.body.secondName;
+      student_values.surname = req.body.surname;
+      student_values.dateOfBirth = req.body.dateOfBirth;
+      student_values.admNumber = req.body.admNumber;
+      student_values.className = req.body.className;
+      student_values.gender = req.body.gender;
+      student_values.action = `/students/update/${req.params.student}`;
+      student_values.submit = "Update";
+      student_values.title = "Edit a Student Entry";
+      return res.render("pages/student", {
+        gender_values,
+        student_values,
+        errors: req.flash("error"),
+        info: req.flash("info"),
+      });
+    } else {
+      return next(e);
+    }
+  }
+  if (student) {
+    req.flash("info", "The student entry was updated.");
   } else {
-    req.flash("info", "The student has been successfully deleted.");
+    req.flash("error", "The student entry was not found.");
   }
-  res.redirect('/students');
-}
+  res.redirect("/students");
+};
 
-const deleteStudent = async (req, res) => {
-  const {
-    user: { userId },
-    params: { id: studentId },
-  } = req
-
-  const student = await Student.findByIdAndRemove({
-    _id: studentId,
-    createdBy: userId,
-  })
+const deleteStudent = async (req, res, next) => {
+  const student = await Student.findOneAndDelete({
+    _id: req.params.student,
+    createdBy: req.user.id,
+  });
   if (!student) {
-    req.flash("error",`No student with id ${studentId} found`);
+    req.flash("error",`The student was not found`);
   } else {
     req.flash("info", "The student has been successfully deleted.");
   }
@@ -82,9 +157,10 @@ const deleteStudent = async (req, res) => {
 };
 
 module.exports = {
-  createStudent,
-  deleteStudent,
   getAllStudents,
+  createStudent,
+  addStudent,
+  editStudent,
   updateStudent,
-  getStudent,
+  deleteStudent
 };
