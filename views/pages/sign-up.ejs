@@ -5,7 +5,7 @@
       <h1 style="text-align: center;">Sign Up</h1>
     </div>
       <div class="mb-3 border border-5">
-      <form action="/sign-up" method="POST">
+      <form class="register" action="/sign-up" method="POST">
         <div class="mb-3 ms-3 m3-3">
           <label for="name" class="form-label">Name</label>
           <input name="name" id="name" type="text" class="form-control" value="<%= user_values.name %>"/>
@@ -28,7 +28,7 @@
       </div>
       </form>
     </div class="mt-10">
-      <a href="/" class="btn btn-primary mt-10">Back</a>
+    <p style="text-align: center;"><a href="/" class="btn btn-primary mt-10">Back</a></p>
     </div>
     </div>
 <%- include("../partials/footer.ejs") %>

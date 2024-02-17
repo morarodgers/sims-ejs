@@ -5,8 +5,8 @@ const gender_values = Student.schema.path("gender").enumValues;
 
 
 const getAllStudents = async (req, res) => {
-  const students = await Student.find({ createdBy: req.user.userId });
-  res.render("pages/students",{
+  const students = await Student.find({ createdBy: req.user.id });
+  res.render("pages/students", {
     students: students,
     errors: req.flash("error"),
     info: req.flash("info"),

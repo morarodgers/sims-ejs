@@ -2,6 +2,9 @@
 <%- include('../partials/navbar.ejs') %>
 <% if (students.length === 0) { %>
   <h2 style="text-align: center;">There are no students to display.</h2>
+  <div style="text-align: center;">
+    <img src="none.png" width="500px" height="300px">
+  </div>
 <% } else { %>
 <table id="students-table">
   <tr id="students-table-header">
@@ -56,5 +59,5 @@
       });
       </script>
 <% } %>
-<p style="text-align: center;"><a href="/">Home.</a></p>
+<p style="text-align: center;"><a href="/">Home</a></p>
 <%- include("../partials/footer.ejs") %>
