@@ -42,4 +42,18 @@ const StudentSchema = new mongoose.Schema({
   { timestamps: true }
 );
 
+StudentSchema.methods.formatBirthDate = function () {
+    let dateOfBirth = '';
+    if (this.dateOfBirth) {
+        let day = new Date(this.dateOfBirth).getUTCDate();
+        let month = new Date(this.dateOfBirth).getUTCMonth() + 1;
+        let year = new Date(this.dateOfBirth).getUTCFullYear();
+        if (day < 10) {
+            day = day.toString().padStart(2, "0");
+        }
+        dateOfBirth = `${month}/${day}/${year}`; 
+    }
+    return dateOfBirth;
+}
+
 module.exports = mongoose.model('Student',StudentSchema)

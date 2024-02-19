@@ -88,7 +88,7 @@ const editStudent = async (req, res) => {
   student_values.firstName = student.firstName || "";
   student_values.secondName = student.secondName || "";
   student_values.surname = student.surname || "";
-  student_values.dateOfBirth = student.dateOfBirth || "";
+  student_values.dateOfBirth = student.formatBirthDate() || "";
   student_values.admNumber = student.admNumber || "";
   student_values.className = student.className || "";
   student_values.gender = student.gender || "";
