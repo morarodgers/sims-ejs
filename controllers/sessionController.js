@@ -70,9 +70,17 @@ const log_off = (req, res) => {
   });
 };
 
+const render_welcome = (req, res) => {
+  res.render("pages/welcome", {
+    user: req.user,
+    errors: req.flash("error"),
+    info: req.flash("info"),
+  });
+};
+
 const login = (req, res) => {
   if (req.user) {
-    return res.redirect("/students");
+    return res.redirect("/welcome");
   }
   res.render("pages/logon", {
     errors: req.flash("error"),
@@ -86,4 +94,5 @@ module.exports = {
   sign_up,
   log_off,
   login,
+  render_welcome,
 };

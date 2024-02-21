@@ -10,6 +10,7 @@ const {
   sign_up,
   log_off,
   login,
+  render_welcome,
 } = require("../controllers/sessionController");
 
 router.route("/").get(render_index);
@@ -19,12 +20,13 @@ router
   .get(login)
   .post(
     passport.authenticate("local", {
-      successRedirect: "/students",
+      successRedirect: "/welcome",
       failureRedirect: "/logon",
       failureFlash: true,
     }),
     refreshCSRF
   );
 router.route("/logoff").get(log_off);
+router.route("/welcome").get(render_welcome);
 
 module.exports = router;
