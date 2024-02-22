@@ -3,7 +3,7 @@ const parseVErr = require("../utils/parseValidationErrs");
 
 const render_index = (req, res) => {
   if (req.user) {
-    return res.redirect("/students");
+    return res.redirect("/welcome");
   }
   res.render("pages/index", {
     errors: req.flash("error"),
