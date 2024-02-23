@@ -1,18 +1,23 @@
+require("dotenv").config();
 const express = require("express");
 require("express-async-errors");
-require("dotenv").config(); // to load the .env file into the process.env object
-const connectDB = require("./db/connect");
-const app = express();
 const session = require("express-session");
-const secretWordRouter = require("./routes/secretWord");
-const auth = require("./middleware/auth");
-const studentsRouter = require("./routes/students");
-const cookieParser = require("cookie-parser");
-const csrf = require("host-csrf");
-
+const flash = require("connect-flash");
+const rateLimiter = require("express-rate-limit");
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const passport = require("passport");
 const MongoDBStore = require("connect-mongodb-session")(session);
-const url = process.env.MONGO_URI;
 
+const passportInit = require("./passport/passportInit");
+const connectDB = require("./db/connect");
+const page_router = require("./routes/sessionRoutes");
+const students_router = require("./routes/students");
+const { authMiddleware, setCurrentUser, csrf } = require("./middleware/auth");
+const errorHandlerMiddleware = require("./middleware/error-handler");
+const notFoundMiddleware = require("./middleware/not-found");
+
+const url = process.env.MONGO_URI;
 const store = new MongoDBStore({
   uri: url,
   collection: "mySessions",
@@ -21,7 +26,11 @@ store.on("error", function (error) {
   console.log(error);
 });
 
-const sessionParms = {
+const app = express();
+
+app.set("view engine", "ejs");
+
+const session_parms = {
   secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
@@ -31,55 +40,50 @@ const sessionParms = {
 
 if (app.get("env") === "production") {
   app.set("trust proxy", 1);
-  sessionParms.cookie.secure = true;
+  session_parms.cookie.secure = true;
 }
-
-app.use(express.static('views'));
-app.use(express.urlencoded({extended: true}));
-app.use(cookieParser(process.env.SESSION_SECRET));
-app.use(session(sessionParms));
-
-let csrf_development_mode = true;
-if (app.get("env") === "production") {
-  csrf_development_mode = false;
-  app.set("trust proxy", 1);
-}
-
-const csrf_options = {
-  protected_operations: ["POST", "PATCH", "PUT"],
-  protected_content_types: ["application/x-www-form-urlencoded", "application/json"],
-  development_mode: csrf_development_mode,
-  header_name: "csrf-token",
-};
-
-app.use(csrf(csrf_options));
-
-const passport = require("passport");
-const passportInit = require("./passport/passportInit");
-
+app.use(session(session_parms));
 passportInit();
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(require("connect-flash")());
-app.use(require("./middleware/storeLocals"));
-app.get("/", (req, res) => {
-  res.render("index");
-});
-app.use("/sessions", require("./routes/sessionRoutes"));
-app.use("/students", auth, studentsRouter);
-app.use("/secretWord", auth, secretWordRouter);
-
-app.set("view engine", "ejs");
-
-app.use((req, res) => {
-  res.status(404).send(`That page (${req.url}) was not found.`);
-});
-
-app.use((err, req, res, next) => {
-  res.status(500).send(err.message);
-  console.log(err);
-});
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
+app.use(flash());
+app.use(
+  rateLimiter({
+    windowMs: 60 * 1000, // 15 minutes
+    max: 60, // each IP is limited to make 100 requests per windowMs
+  })
+);
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js",
+          "'unsafe-inline'",
+        ],
+        objectSrc: ["'none'"],
+        styleSrc: [
+          "'self'",
+          "https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css",
+          "'unsafe-inline'",
+        ],
+        upgradeInsecureRequests: null,
+      },
+    },
+  })
+);
+app.use(xss());
+app.use(csrf);
+app.use(setCurrentUser);
+app.use("/", page_router);
+app.use("/students", authMiddleware, students_router);
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 3000;
 

@@ -1,0 +1,51 @@
+<%- include('../partials/head.ejs', {errors, info}); %>
+<%- include('../partials/navbar.ejs'); %>
+<div class="container justify-content-center">
+  <div class="w-50 container">
+     <div class="mt-10 mb-10">
+    <h1 style="text-align: center;"><%= student_values.firstName %></h1>
+  </div>
+    <div class="mb-3 border border-5">
+    <form action="<%= student_values.action %>" method="POST">
+      <div class="mb-3 ms-3 m3-3">
+        <label for="firstName">First name:</label>
+        <input name="firstName" id="firstName" type="text" class="form-control" value="<%= student_values.firstName || '' %>" />
+      </div>
+      <div class="mb-3 ms-3 me-3">
+        <label for="secondName">Second name:</label>
+        <input name="secondName" id="secondName" type="text" class="form-control" value="<%= student_values.secondName || '' %>" />
+      </div>
+      <div class="mb-3 ms-3 m3-3">
+        <label for="surname">Surname:</label>
+        <input name="surname" id="surname" type="text" class="form-control" value="<%= student_values.surname || '' %>" />
+      </div>
+      <div class="mb-3 ms-3 me-3">
+        <label for="dateOfBirth">Date of birth (MM/DD/YYYY):</label>
+        <input name="dateOfBirth" id="dateOfBirth" type="text" class="form-control" value="<%= student_values.dateOfBirth || '' %>" />
+      </div>
+      <div class="mb-3 ms-3 m3-3">
+        <label for="admNumber">Admission number:</label>
+        <input name="admNumber" id="admNumber" type="text" class="form-control" value="<%= student_values.admNumber || '' %>" />
+      </div>
+      <div class="mb-3 ms-3 me-3">
+        <label for="className">Class Name:</label>
+        <input name="className" id="className" type="text" class="form-control" value="<%= student_values.className || '' %>" />
+      </div>
+      <div class="mb-3 ms-3 me-3">
+        <label for="gender">Gender:</label>
+        <select name="gender" id="gender" class="form-select" value="<%= student_values.gender %>">
+          <% gender_values.forEach((gender_name)=>{ %>
+            <option value="<%= gender_name %>"><%= gender_name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="mb-3 ms-3 me-3">
+      <button type="submit" class="btn btn-primary"><%= student_values.submit %></button>
+      <input type="hidden" name="_csrf" value="<%= _csrf %>">
+    </div>
+    </form>
+  </div class="mt-10">
+  <p style="text-align: center;"><a href="/students" class="btn btn-primary mt-10">Back</a></p>
+  </div>
+  </div>
+<%- include("../partials/footer.ejs") %>

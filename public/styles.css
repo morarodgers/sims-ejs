@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:100&effect=neon|fire|emboss');
+@import url('https://fonts.googleapis.com/css2?family=Raleway');
+@import url('https://fonts.googleapis.com/css2?family=Belanosima');
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
+
+/* Override Bootstrap colors with my own */
+:root {
+  --brown-100: #efebe9;
+  --brown-200: #d7ccc8;
+  --brown-300: #bcaaa4;
+  --brown-400: #a1887f;
+  --brown-500: #8d6e63;
+  --brown-600: #795548;
+  --brown-700: #6d4c41;
+  --brown-800: #5d4037;
+  --brown-900: #4e342e;
+}
+
+.btn-primary {
+    background-color: var(--brown-500);
+    border-color: var(--brown-500);
+}
+.btn-primary:hover {
+    background-color: var(--brown-600);
+    border-color: var(--brown-600);
+}
+
+.body {
+    color: var(--brown-800);
+}
+
+.navbar .navbar-expand-lg .navbar-dark .bg-primary {
+  background-color: #8d6e63 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #e9e6e0d9;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #f0f0f0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #DBC1AD;
+  font-family: 'Belanosima', sans-serif;
+  font-size: large;
+  color: #5d4d3c;
+  height: 100%;
+}
+
+h1, h2, h3 {
+  font-family: cooper;
+  color: rgb(205, 116, 6);
+  margin-top: 30px;
+}
+
+#messages {
+  display: none;  
+}
+
+.edit-input {
+  display: none;
+}
+
+button, span, a {
+  margin-right: 10px;
+}
+
+li {
+  padding: 5px;
+}
+
+section {
+  padding: 5px;
+}
+
+.footer {
+  text-align: center;
+  font-size: 80%;
+  font-family: Lato;
+  color: rgb(244, 225, 164);
+  background-color: rgba(182, 125, 9, 0.475);
+  padding: 1%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
+
+label {
+  font-size: 120%;
+  color: rgba(224, 161, 45, 0.77);
+  font-weight: 700;
+}
+
+input {
+  height: 30px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border: 2px solid #15130e;
+  border-radius: 4px;
+  background-color: #ece4de;
+  font-size: 14px;
+}
+
+button {
+  background-color: rgb(205, 116, 6);
+  border: none;
+  color: aliceblue;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+button:hover {
+  color: rgb(237, 205, 205);
+  background-color: rgb(146, 228, 243);
+}
+
+a:link,
+a:visited {
+  color: #3f38288f;
+  text-decoration: none;
+}
+
+a:hover {
+  color:#39d4d1f4;
+}
+
+@keyframes changeBackgroundColor {
+  0% {
+    background-color: #DBC1AD;
+  }
+  50% {
+    background-color: #C09247;
+  }
+  100% {
+    background-color: #D1AFD3;
+  }
+  100% {
+    background-color: #DBC1AD;
+  }
+}
+
+nav {
+  height: 7rem;
+  position: sticky;
+  top: 0%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  animation: changeBackgroundColor 10s infinite;
+  width: 100%;
+}
+
+html {
+  scroll-padding-top: 8rem;
+}
+
+
+.sign {
+  display: flex;
+  padding: 10px;
+  gap: 10px;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #8B4513;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #8B4513;
+}
+
+tr:nth-child(even) {
+  background-color: #D2B48C;
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+
+  nav {
+    text-align: center;
+    padding: 24px
+  }
+    
+  body {
+    flex-direction: column;
+    font-size: 16px;
+    line-height: 1.4; 
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  nav {
+    text-align: center;
+    padding: 24px
+  }
+
+  body {
+    flex-direction: column;
+    /*overflow-x: hidden; */
+    font-size: 16px;
+    line-height: 1.4; 
+  }
+
+}

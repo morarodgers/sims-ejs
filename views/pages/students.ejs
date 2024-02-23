@@ -1,0 +1,63 @@
+<%- include('../partials/head.ejs', {errors, info}) %>
+<%- include('../partials/navbar.ejs') %>
+<% if (students.length === 0) { %>
+  <h2 style="text-align: center;">There are no students to display.</h2>
+  <div style="text-align: center;">
+    <img src="none.png" width="500px" height="300px">
+  </div>
+<% } else { %>
+<table id="students-table">
+  <tr id="students-table-header">
+    <th scope="col">First name</th>
+    <th scope="col">Second name</th>
+    <th scope="col">Surname</th>
+    <th scope="col">Date of birth</th>
+    <th scope="col">Admission number</th>
+    <th scope="col">Class Name</th>
+    <th scope="col">Gender</th>
+    <th colspan="2" scope="col"></th>
+  </tr>
+    <% students.forEach((student) => { %>
+      <tr>
+        <td><%= student.firstName %></td>
+        <td><%= student.secondName %></td>
+        <td><%= student.surname %></td>
+        <td><%= student.formatBirthDate() %></td>
+        <td><%= student.admNumber %></td>
+        <td><%= student.className %></td>
+        <td><%= student.gender %></td>
+        <td><a class="btn btn-primary" href="/students/edit/<%= student._id %>">Edit</a></td>
+        <td><button type="button" class="deleteButton btn btn-primary" data-id="<%= student._id %>">Delete</button></td>
+      </tr>
+      <% }); %>
+    </table>
+    <script>
+      document.addEventListener("DOMContentLoaded", ()=>{
+        const table = document.getElementById("students-table");
+        table.addEventListener("click", async (event) => {
+          if (event.target.classList.contains("deleteButton")) {
+            const student_id = event.target.dataset.id;
+            event.preventDefault();
+            try {
+              response = await fetch(`/students/delete/${student_id}`, { method: "DELETE"});
+              window.location = response.url;
+            } catch {
+              const body = document.getElementById("body");
+              const alert_html = "<div class=\"alert alert-danger\" role=\"alert\">A communications error occurred.</div>";
+              const temp_div = document.createElement("div");
+              temp_div.innerHTML = alert_html;
+              const alerts = document.getElementsByClassName("alert");
+              Array.prototype.forEach.call(alerts, (alert) =>{
+                 body.removeChild(alert);
+              });
+              const new_alert = document.createElement("div");
+              new_alert.innerHTML = alert_html;
+              body.prepend(temp_div.firstChild);
+            }
+          };
+        });
+      });
+      </script>
+<% } %>
+<p style="text-align: center;"><a href="/">Home</a></p>
+<%- include("../partials/footer.ejs") %>
